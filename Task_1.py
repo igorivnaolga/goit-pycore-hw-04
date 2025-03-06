@@ -20,27 +20,33 @@
 # Результатом роботи функції є кортеж із двох чисел: загальної суми зарплат і середньої заробітної плати.
 
 
-# Рекомендації для виконання:
+def total_salary(path):
+    try:
+        salaries = [] 
 
-# Використовуйте менеджер контексту with для читання файлів.
-# Пам'ятайте про встановлення кодування при відкриті файлів
-# Для розділення даних у кожному рядку можна застосувати метод split(',').
-# Обрахуйте загальну суму заробітної плати, а потім розділіть її на кількість розробників, щоб отримати середню зарплату.
-# Опрацьовуйте можливі винятки при роботі з файлами, такі як відсутність файлу.
+        with open(path, encoding="utf-8") as file:
+            for line in file:
+                cleaned_line = line.strip()
+                if cleaned_line: 
+                    salary = int(cleaned_line.split(',')[1])
+                    salaries.append(salary)
+
+        
+        total = sum(salaries)
+        if salaries:
+            average = total / len(salaries)
+        else:
+            average = 0
+
+        return total, average
+
+    except FileNotFoundError:
+        print(f"File '{path}' not found.")
+        return 0, 0
+    except ValueError:
+        print("Invalid data format in file.")
+        return 0, 0
 
 
-# Критерії оцінювання:
-
-# Функція повинна точно обчислювати загальну та середню суми.
-# Повинна бути обробка випадків, коли файл відсутній або пошкоджений.
-# Код має бути чистим, добре структурованим і зрозумілим.
-
-
-# Приклад використання функції:
-
-# total, average = total_salary("path/to/salary_file.txt")
-# print(f"Загальна сума заробітної плати: {total}, Середня заробітна плата: {average}")
-
-# Очікуваний результат:
-
-# Загальна сума заробітної плати: 6000, Середня заробітна плата: 2000
+total, average = total_salary("salary.txt")
+print(f"Загальна сума заробітної плати: {total}, Середня заробітна плата: {average}")
