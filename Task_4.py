@@ -28,42 +28,70 @@
 # Ваша програма має вміти ідентифікувати та повідомляти про неправильно введені команди.
 
 
-# Рекомендації для виконання
 
-# По перше, нам треба систематизувати опис форматів наших команд для консольного бота-помічника. Це допоможе зрозуміти які функції треба зробити для кожної команди. Зробімо це:
-
-# 1. Команда "hello", тут можна обійтись поки без функції та використати звичайний print:
-
-# Введення: "hello"
-# Вивід: "How can I help you?"
+def parse_input(user_input):
+    cmd, *args = user_input.split()
+    cmd = cmd.strip().lower()
+    return cmd, *args
 
 
-# 2. Команда "add [ім'я] [номер телефону]". Для цієї команди зробимо функцію add_contact:
-
-# Введення: "add John 1234567890"
-# Вивід: "Contact added."
-
-
-# 3. Команда "change [ім'я] [новий номер телефону]". Для цієї команди зробимо функцію change_contact:
-
-# Введення: "change John 0987654321"
-# Вивід: "Contact updated." або повідомлення про помилку, якщо ім'я не знайдено
+def add_contact(args, contacts):
+    if len(args) != 2:
+        return "Invalid input. Use: add <name> <phone>"
+    name, phone = args
+    contacts[name] = phone
+    return "Contact added."
 
 
-# 4. Команда "phone [ім'я]". Для цієї команди зробимо функцію show_phone:
+def change_contact(args, contacts):
+    if len(args) != 2:
+        return "invalid input. Use: change <name> <new_phone>"
+    name, new_phone = args
+    if name in contacts:
+        contacts[name] = new_phone
+        return "Contact updated."
+    else:
+        return "Contact not found"
+    
 
-# Введення: "phone John"
-# Вивід: [номер телефону] або повідомлення про помилку, якщо ім'я не знайдено
+def show_phone(args, contacts):
+    if len(args) != 1:
+        return "Invalid input. Use: phone <name>"
+    name = args[0]
+    return contacts.get(name, "Contact not found.")
 
 
-# 5. Команда "all". Для цієї команди зробимо функцію show_all:
+def show_all(contacts):
+    if not contacts:
+        return "No contacts available."
+    return "\n".join(f"{name}:{phone}" for name, phone in contacts.items())
 
-# Введення: "all"
-# Вивід: усі збережені контакти з номерами телефонів
 
+def main():
+    contacts = {}
+    print("Welcome to the assistant bot!")
+    while True:
+        user_input = input("Enter a command: ")
+        command, *args = parse_input(user_input)
 
-# 6. Команда "close" або "exit". Оскільки тут треба перервати виконання програми, можна поки обійтись без функції для цих команд:
+        if command in ["close", "exit"]:
+            print("Good bye!")
+            break
 
-# Введення: будь-яке з цих слів
-# Вивід: "Good bye!" та завершення роботи бота
-# Будь-яка команда, яка не відповідає вищезазначеним форматам, буде вважатися нами невірною, і бот буде виводити повідомлення "Invalid command."
+        elif command == "hello":
+            print("How can I help you?")
+        elif command == "add":
+            print(add_contact(args, contacts))
+        elif command == "change":
+            print(change_contact(args, contacts))
+        elif command == "phone":
+            print(show_phone(args, contacts))
+        elif command == "all":
+            print(show_all(contacts))
+        else:
+            print("Invalid command.")
+
+if __name__ == "__main__":
+    main()
+
+    
